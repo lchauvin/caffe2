@@ -37,7 +37,11 @@ function(custom_protobuf_find)
     # because we end up using this value in a DEPENDS clause in
     # add_custom_command. Support for this was added in CMake v3.0.
     # See bbffccca42d4f209220e833e1a86e735a5c83339 (v3.0.0-rc1-350-gbbffccc).
-    set(PROTOBUF_PROTOC_EXECUTABLE "${PROJECT_BINARY_DIR}/bin/protoc" PARENT_SCOPE)
+	if (WIN32)
+	  set(PROTOBUF_PROTOC_EXECUTABLE "${PROJECT_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/protoc" PARENT_SCOPE)
+	else()
+	  set(PROTOBUF_PROTOC_EXECUTABLE "${PROJECT_BINARY_DIR}/bin/protoc" PARENT_SCOPE)
+	endif()
   endif()
   set(Protobuf_FOUND TRUE PARENT_SCOPE)
 endfunction()
@@ -52,7 +56,8 @@ endfunction()
 # They are available in CMake 2.8.12 and later.
 #
 if (WIN32)
-  find_package(Protobuf NO_MODULE)
+  custom_protobuf_find()
+  #find_package(Protobuf NO_MODULE)
 elseif (ANDROID OR IOS)
   custom_protobuf_find()
   # Unfortunately, new protobuf does not support libprotoc and protoc
